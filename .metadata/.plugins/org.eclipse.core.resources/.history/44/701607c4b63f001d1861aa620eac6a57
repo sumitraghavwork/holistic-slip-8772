@@ -1,0 +1,14 @@
+package com.masai.beans;
+
+public class Bidder {
+
+	private String bid;
+	private String vid;
+	private String tid;
+	private String bidAmount;
+	private Date deadline;
+	private String status;
+
+	
+
+}

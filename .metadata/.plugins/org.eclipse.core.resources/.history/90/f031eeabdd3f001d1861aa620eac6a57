@@ -1,0 +1,109 @@
+package com.masai.srv;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
+
+import com.masai.beans.Bidder;
+import com.masai.dao.BidderDao;
+import com.masai.dao.BidderDaoImpl;
+import com.masai.utilities.DBUtil;
+
+public class VendorUser extends User {
+
+	public VendorUser() {
+		super();
+	}
+
+	public VendorUser(String username, String password) {
+		super(username, password);
+	}
+	
+	/*
+1. View all the current Tenders.
+3. View status of a Bid(Whether Selected or Not)
+4. View his own Bid History.
+
+	 */
+	
+	
+	public boolean loginVendor() {
+
+		boolean loginStatus = false;
+
+		PreparedStatement ps = null;
+
+		try (Connection conn = DBUtil.provideConnection()) {
+			ps = conn.prepareStatement("select * from vendor where username = ? AND password = ? ");
+
+			ps.setString(1, this.getUsername());
+			ps.setString(2, this.getPassword());
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				System.out.println("Login Successful");
+				loginStatus = true;
+			} else {
+				System.out.println("Login Denied! Invalid user Details");
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeConnection(ps);
+		}
+
+		return loginStatus;
+	}
+	
+	public void bidTender() {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter the Tender Id:");
+		String tid = sc.nextLine();
+		
+		System.out.println("Enter Vendor userId/username");
+		String vid = sc.nextLine();
+		
+		System.out.println("Enter Bid Amount");
+		int bidAmount = Integer.parseInt(sc.nextLine());
+		
+		BidderDao bdao = new BidderDaoImpl();
+		
+		String status = bdao.bidTender(tid, vid, bidAmount);
+		
+		System.out.println(status);
+		
+	}
+
+	public void getAllBidsOfaVendor() {
+		
+		BidderDao bdao = new BidderDaoImpl();
+		
+		List<Bidder> bids = bdao.getAllBidsOfaVendor(this.getUsername());
+		
+		if(bids.isEmpty()) {
+			System.out.println("No Bids Found");
+		}else {
+			int count = 0;
+			for (int i = 0; i < bids.size(); i++) {
+				Bidder b = bids.get(i);
+				System.out.println(count + " Bids Details:");
+				System.out.println("Bid ID" + b.getBid());
+				System.out.println("Tender ID" + b.getTid());
+				System.out.println("Vendor ID" + b.getVid());
+				System.out.println("Bid Amount" + b.getBidAmount());
+				System.out.println("=================================");
+
+				count++;
+			}
+		}
+	}
+
+}

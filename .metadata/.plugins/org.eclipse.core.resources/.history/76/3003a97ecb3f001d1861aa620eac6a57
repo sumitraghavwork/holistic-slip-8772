@@ -1,0 +1,13 @@
+package com.masai.srv;
+
+public class Vendor extends User {
+
+	public Admin() {
+		super();
+	}
+
+	public Admin(String username, String password) {
+		super(username, password);
+	}
+
+}

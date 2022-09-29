@@ -1,0 +1,5 @@
+package com.dao.beans;
+
+public class Vendor {
+
+}
