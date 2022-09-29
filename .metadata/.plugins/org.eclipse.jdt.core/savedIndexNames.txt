@@ -1,0 +1,5 @@
+INDEX VERSION 1.131+C:\Users\ragha\Downloads\VSCode\holistic-slip-8772\.metadata\.plugins\org.eclipse.jdt.core
+90006275.index
+1865797976.index
+2764363910.index
+2442358636.index

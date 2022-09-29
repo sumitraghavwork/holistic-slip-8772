@@ -1,0 +1,402 @@
+package com.masai.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.masai.beans.Tender;
+import com.masai.beans.TenderStatus;
+import com.masai.utilities.DBUtil;
+
+public class TenderDaoImpl implements TenderDao {
+
+	@Override
+	public List<Tender> getTenderDetails(String tid) {
+		List<Tender> tenderList = new ArrayList<Tender>();
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+		PreparedStatement pst = null;
+		try {
+
+			ps = con.prepareStatement("select * from tender where tid=?");
+
+			ps.setString(1, tid);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				Tender tender = new Tender();
+				String id = rs.getString(1);
+				String name = rs.getString(2);
+				String type = rs.getString(3);
+				int price = rs.getInt(4);
+				String desc = rs.getString(5);
+
+				tender = new Tender(id, name, type, price, desc);
+				tenderList.add(tender);
+			} else {
+				pst = con.prepareStatement("select * from tender where tname like '%" + tid + "%'");
+
+				ResultSet rss = pst.executeQuery();
+
+				while (rss.next()) {
+					Tender tender = new Tender();
+					String id = rss.getString(1);
+					String name = rss.getString(2);
+					String type = rss.getString(3);
+					int price = rss.getInt(4);
+					String desc = rss.getString(5);
+					tender = new Tender(id, name, type, price, desc);
+					tenderList.add(tender);
+				}
+
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+
+			DBUtil.closeConnection(ps);
+
+			DBUtil.closeConnection(pst);
+
+			DBUtil.closeConnection(con);
+
+		}
+
+		return tenderList;
+	}
+
+	@Override
+	public List<Tender> getAllTenders() {
+		List<Tender> tenderList = new ArrayList<Tender>();
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			ps = con.prepareStatement("select * from tender");
+
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Tender tender = new Tender();
+
+				tender.setTid(rs.getString("tid"));
+				tender.setTname(rs.getString("tname"));
+				tender.setTtype(rs.getString("ttype"));
+				tender.setTprice(rs.getInt("tprice"));
+				tender.setTdesc(rs.getString("tdesc"));
+				tenderList.add(tender);
+			}
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		} finally {
+
+			DBUtil.closeConnection(ps);
+
+			DBUtil.closeConnection(rs);
+
+			DBUtil.closeConnection(con);
+
+		}
+
+		return tenderList;
+	}
+
+	@Override
+	public String createTender(Tender tender) {
+
+		String status = "Tender Addition Failed!";
+
+		Connection conn = DBUtil.provideConnection();
+
+		PreparedStatement pst = null;
+		PreparedStatement ps = null;
+
+		try {
+			ps = conn.prepareStatement("select * from tender where tid=?");
+
+			ps.setString(1, tender.getTid());
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				status = "Tender Declined!<br>Tender Id already Exists";
+			} else {
+				try {
+					pst = conn.prepareStatement("insert into tender values(?,?,?,?,?)");
+					pst.setString(1, tender.getTid());
+					pst.setString(2, tender.getTname());
+					pst.setString(3, tender.getTdesc());
+					pst.setInt(4, tender.getTprice());
+					pst.setString(5, tender.getTdesc());
+
+					int x = pst.executeUpdate();
+					if (x > 0)
+						status = "New Tender Inserted<br> Your Tender id: " + tender.getTid();
+				} catch (SQLException e) {
+
+					status = "Error : " + e.getMessage();
+
+					e.printStackTrace();
+				}
+			}
+
+		} catch (SQLException e) {
+
+			status = "Error : " + e.getMessage();
+
+			e.printStackTrace();
+		} finally {
+
+			DBUtil.closeConnection(pst);
+
+			DBUtil.closeConnection(ps);
+
+			DBUtil.closeConnection(conn);
+
+		}
+
+		return status;
+	}
+
+	@Override
+	public boolean removeTender(String tid) {
+		boolean flag = false;
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+		try {
+
+			ps = con.prepareStatement("delete from tender where tid=?");
+
+			ps.setString(1, tid);
+
+			int x = ps.executeUpdate();
+
+			if (x > 0) {
+
+				flag = true;
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+
+			DBUtil.closeConnection(ps);
+
+			DBUtil.closeConnection(con);
+
+		}
+
+		return flag;
+	}
+
+	@Override
+	public String updateTender(Tender tender) {
+		String status = "Tender Updation Failed!";
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement pst = null;
+
+		try {
+			pst = con.prepareStatement("UPDATE tender SET tname=?,ttype=?,tprice=?,tdesc=?,tdesc=?, where tid=?");
+
+			pst.setString(1, tender.getTname());
+			pst.setString(2, tender.getTdesc());
+			pst.setInt(3, tender.getTprice());
+			pst.setString(4, tender.getTdesc());
+			pst.setString(7, tender.getTid());
+
+			int x = pst.executeUpdate();
+			if (x > 0)
+				status = "TENDER DETAILS UPDATED SUCCSESFULLY";
+
+		} catch (SQLException e) {
+			status = "Error: " + e.getMessage();
+			e.printStackTrace();
+		} finally {
+
+			DBUtil.closeConnection(pst);
+
+			DBUtil.closeConnection(con);
+
+		}
+
+		return status;
+	}
+
+	@Override
+	public Tender getTenderDataById(String tid) {
+
+		Tender tender = null;
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+		PreparedStatement pst = null;
+		try {
+
+			ps = con.prepareStatement("select * from tender where tid=?");
+
+			ps.setString(1, tid);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				String id = rs.getString(1);
+				String name = rs.getString(2);
+				String type = rs.getString(3);
+				int price = rs.getInt(4);
+				String desc = rs.getString(5);
+
+				tender = new Tender(id, name, type, price, desc);
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+
+			DBUtil.closeConnection(ps);
+
+			DBUtil.closeConnection(pst);
+
+			DBUtil.closeConnection(con);
+
+		}
+
+		return tender;
+	}
+
+	@Override
+	public String getTenderStatus(String tenderId) {
+		String status = "Not Assigned";
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+
+		ResultSet rs = null;
+
+		try {
+			ps = con.prepareStatement("select * from tenderstatus where tid=?");
+
+			ps.setString(1, tenderId);
+
+			rs = ps.executeQuery();
+
+			if (rs.next()) {
+				// Tender Has been Assigned
+
+				status = "Assigned";
+			}
+
+		} catch (SQLException e) {
+			status = "Error: " + e.getMessage();
+			e.printStackTrace();
+		} finally {
+
+			DBUtil.closeConnection(con);
+			DBUtil.closeConnection(ps);
+			DBUtil.closeConnection(rs);
+
+		}
+		return status;
+	}
+
+	@Override
+	public String assignTender(String tenderId, String vendorId, String bidderId) {
+		String status = "Tender Assigning failed";
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			ps = con.prepareStatement("select * from tenderstatus where tid=?");
+			ps.setString(1, tenderId);
+
+			rs = ps.executeQuery();
+
+			if (rs.next()) {
+
+				status = "Tender is Already Assigned to Vendor: " + rs.getString("vid");
+			} else {
+
+				ps = con.prepareStatement("insert into tenderstatus values(?,?,?,?)");
+				ps.setString(1, tenderId);
+				ps.setString(2, bidderId);
+				ps.setString(3, "Assigned");
+				ps.setString(4, vendorId);
+
+				int k = ps.executeUpdate();
+				if (k > 0) {
+					status = "Tender: " + tenderId + " has been Assigned to vendor: " + vendorId;
+				}
+
+			}
+		} catch (SQLException e) {
+			status = status + e.getMessage();
+			e.printStackTrace();
+		}
+
+		return status;
+	}
+
+	@Override
+	public List<TenderStatus> getAllAssignedTenders() {
+		List<TenderStatus> statusList = new ArrayList<TenderStatus>();
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+
+		ResultSet rs = null;
+
+		try {
+
+			ps = con.prepareStatement("select * from tenderstatus");
+
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+
+				TenderStatus status = new TenderStatus(rs.getString("tid"), rs.getString("bid"), rs.getString("status"),
+						rs.getString("vid"));
+
+				statusList.add(status);
+			}
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
+		finally {
+
+			DBUtil.closeConnection(con);
+
+			DBUtil.closeConnection(ps);
+
+			DBUtil.closeConnection(rs);
+
+		}
+
+		return statusList;
+	}
+
+}

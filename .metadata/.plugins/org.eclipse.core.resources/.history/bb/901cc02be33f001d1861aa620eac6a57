@@ -1,0 +1,8 @@
+CREATE TABLE tender (
+  tid varchar(15) NOT NULL,
+  tname varchar(40) DEFAULT NULL,
+  ttype varchar(20) DEFAULT NULL,
+  tprice int(11) DEFAULT NULL,
+  tdesc varchar(300) DEFAULT NULL,
+  PRIMARY KEY (tid)
+)

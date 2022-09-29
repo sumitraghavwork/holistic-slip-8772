@@ -1,0 +1,56 @@
+package com.masai.srv;
+
+import java.util.Scanner;
+
+public class Home {
+
+	public static void main(String[] args) {
+
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("Welcome To Tender Management System");
+
+		while (true) {
+
+			System.out.println("Do You Want to Login ? : {Y/N}");
+			String choice = sc.nextLine();
+
+			if (choice.equalsIgnoreCase("N")) {
+				System.out.println("Thank You for using our System.");
+				break;
+			} else {
+				System.out.println("Choose User Type: \n" + "1. Admin \n" + "2. Vendor");
+				int key = Integer.parseInt(sc.nextLine());
+
+				if(key < 1 || key > 2) {
+					System.out.println("Invalid Choice! " + key);
+				}else {
+					System.out.println("Enter username");
+					String uname = sc.nextLine();
+
+					System.out.println("Enter password");
+					String upass = sc.nextLine();
+					
+					User user;
+					if(key==1) {
+						user = new Admin(uname,upass);
+					}
+					
+				}
+			}
+
+		}
+
+	}
+
+	public static void loginAdmin() {
+		
+		Scanner
+		
+	}
+
+	public static void vendorLogin() {
+
+	}
+
+}

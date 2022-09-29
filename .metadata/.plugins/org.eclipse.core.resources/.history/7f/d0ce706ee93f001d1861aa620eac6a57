@@ -1,0 +1,216 @@
+package com.masai.srv;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
+
+import com.masai.beans.Bidder;
+import com.masai.beans.Tender;
+import com.masai.beans.Vendor;
+import com.masai.dao.BidderDao;
+import com.masai.dao.BidderDaoImpl;
+import com.masai.dao.TenderDao;
+import com.masai.dao.TenderDaoImpl;
+import com.masai.dao.VendorDao;
+import com.masai.dao.VendorDaoImpl;
+import com.masai.utilities.DBUtil;
+
+public class Admin extends User {
+
+	public Admin() {
+		super();
+	}
+
+	public Admin(String username, String password) {
+		super(username, password);
+	}
+
+	public boolean loginAdmin() {
+
+		boolean loginStatus = false;
+		
+		Connection conn = DBUtil.provideConnection();
+		PreparedStatement ps = null;
+
+		try {
+			ps = conn.prepareStatement("select * from admin where username = ? AND password = ? ");
+
+			ps.setString(1, this.getUsername());
+			ps.setString(2, this.getPassword());
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				System.out.println("Login Successful");
+				loginStatus = true;
+			} else {
+				System.out.println("Login Denied! Invalid user Details");
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeConnection(ps);
+			DBUtil.closeConnection(conn);
+		}
+
+		return loginStatus;
+	}
+
+	public void registerVendor() {
+
+		String status = "Registration Failed!!";
+
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("Enter Vendor userId/username");
+		String username = sc.nextLine();
+
+		System.out.println("Enter Vendor Password");
+		String password = sc.nextLine();
+
+		Vendor vendor = new Vendor(username, password);
+
+		VendorDao vdao = new VendorDaoImpl();
+
+		status = vdao.registerVendor(vendor);
+
+		System.out.println(status);
+
+	}
+
+	public void viewAllVendors() {
+
+		VendorDao vdao = new VendorDaoImpl();
+
+		List<Vendor> vendors = vdao.getAllVendors();
+
+		if (vendors.isEmpty())
+			System.out.println("No Tenders Found");
+		else {
+			int count = 1;
+			for (int i = 0; i < vendors.size(); i++) {
+				Vendor v = vendors.get(i);
+				System.out.println(count + " Vendor Details:");
+				System.out.println("ID " + v.getVid());
+				System.out.println("Name " + v.getVname());
+				System.out.println("Email " + v.getVemail());
+				System.out.println("Mobile " + v.getVmob());
+				System.out.println("Address " + v.getAddress());
+				System.out.println("Company " + v.getCompany());
+				System.out.println("=================================");
+
+				count++;
+			}
+		}
+
+	}
+
+	public void viewAllTendors() {
+
+		TenderDao tdao = new TenderDaoImpl();
+
+		List<Tender> tenders = tdao.getAllTenders();
+
+		if (tenders.isEmpty())
+			System.out.println("No Tenders Found");
+		else {
+			int count = 1;
+			for (int i = 0; i < tenders.size(); i++) {
+				Tender t = tenders.get(i);
+				System.out.println(count + " Tender Details:");
+				System.out.println("ID " + t.getTid());
+				System.out.println("Title " + t.getTname());
+				System.out.println("Price " + t.getTprice());
+				System.out.println("Type " + t.getTtype());
+				System.out.println("Description " + t.getTdesc());
+				System.out.println("=================================");
+
+				count++;
+			}
+		}
+
+	}
+
+	public void createNewTender() {
+
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("Enter The Tender Details");
+
+		Tender tender = new Tender();
+
+		System.out.println("Enter the Tender Id:");
+		tender.setTid(sc.nextLine());
+
+		System.out.println("Enter Tender Title:");
+		tender.setTname(sc.nextLine());
+
+		System.out.println("Enter Tender Price:");
+		tender.setTprice(Integer.parseInt(sc.nextLine()));
+
+		System.out.println("Enter Tender Description:");
+		tender.setTdesc(sc.nextLine());
+
+		TenderDao tdao = new TenderDaoImpl();
+
+		String status = tdao.createTender(tender);
+
+		System.out.println(status);
+	}
+	
+	public void getAllBidsOfaTender() {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter Tender Id");
+		String tid = sc.nextLine();
+		
+		BidderDao bdao = new BidderDaoImpl();
+		
+		List<Bidder> bids = bdao.getAllBidsOfaTender(tid);
+		
+		if (bids.isEmpty())
+			System.out.println("No Bids Found");
+		else {
+			int count = 1;
+			for (int i = 0; i < bids.size(); i++) {
+				Bidder b = bids.get(i);
+				System.out.println(count + " Bids Details:");
+				System.out.println("Bid ID " + b.getBid());
+				System.out.println("Tender ID " + b.getTid());
+				System.out.println("Vendor ID " + b.getVid());
+				System.out.println("Bid Amount " + b.getBidAmount());
+				System.out.println("=================================");
+
+				count++;
+			}
+		}
+		
+		
+	}
+	
+	public void assignTender() {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter Tender Id");
+		String tid = sc.nextLine();
+		
+		System.out.println("Enter Vendor Id");
+		String vid = sc.nextLine();
+		
+		System.out.println("Enter Bidder Id");
+		String bid = sc.nextLine();
+		
+		TenderDao tdao = new TenderDaoImpl();
+		String status = tdao.assignTender(tid, vid, bid);
+		
+		System.out.println(status);
+		
+	}
+}

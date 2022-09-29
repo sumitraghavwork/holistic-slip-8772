@@ -1,0 +1,10 @@
+package com.tender.utilities;
+
+public class TNUtil {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

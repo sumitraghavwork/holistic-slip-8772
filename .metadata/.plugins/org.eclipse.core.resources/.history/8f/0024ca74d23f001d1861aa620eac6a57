@@ -1,0 +1,105 @@
+package com.masai.srv;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
+
+import com.masai.beans.Tender;
+import com.masai.beans.Vendor;
+import com.masai.dao.TenderDao;
+import com.masai.dao.TenderDaoImpl;
+import com.masai.dao.VendorDao;
+import com.masai.dao.VendorDaoImpl;
+import com.masai.utilities.DBUtil;
+
+public class Admin extends User {
+
+	public Admin() {
+		super();
+	}
+
+	public Admin(String username, String password) {
+		super(username, password);
+	}
+
+	public boolean loginAdmin() {
+
+		boolean loginStatus = false;
+		
+		PreparedStatement ps = null;
+		
+		try (Connection conn = DBUtil.provideConnection()) {
+			ps = conn.prepareStatement("select * from admin where username = ? AND password = ? ");
+
+			ps.setString(1, this.getUsername());
+			ps.setString(2, this.getPassword());
+
+			int x = ps.executeUpdate();
+
+			if (x > 0) {
+				System.out.println("Login Successful");
+				loginStatus = true;
+			} else {
+				System.out.println("Login Denied! Invalid user Details");
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeConnection(ps);
+		}
+
+		return loginStatus;
+	}
+
+	public void registerVendor() {
+
+		String status = "Registration Failed!!";
+
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("Enter Vendor userId/username");
+		String username = sc.nextLine();
+
+		System.out.println("Enter Vendor Password");
+		String password = sc.nextLine();
+
+		Vendor vendor = new Vendor(username, password);
+
+		VendorDao vdao = new VendorDaoImpl();
+
+		status = vdao.registerVendor(vendor);
+
+		System.out.println(status);
+
+	}
+	
+	public void viewAllTendors() {
+		
+		TenderDao tdao = new TenderDaoImpl();
+		
+		List<Tender> tenders = tdao.getAllTenders();
+		
+		if(tenders.isEmpty()) System.out.println("No Tenders Found");
+		else {
+			int count=0;
+			for(int i=0;i<tenders.size;i++){
+				Tender t = tenders.get(i);
+				System.out.println(count +" Tender Details:" );
+				System.out.println("ID" + t.getTid());
+				System.out.println("Title" + t.getTname());
+				System.out.println("Price" + t.getTprice());
+				System.out.println("Type" + t.getTtype());
+				System.out.println("Description" + t.getTdesc());
+				System.out.println("=================================");
+				
+				count++;
+			});
+		}
+		
+	}
+	
+}

@@ -1,0 +1,99 @@
+package com.masai.srv;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
+
+import com.masai.beans.Bidder;
+import com.masai.dao.BidderDao;
+import com.masai.dao.BidderDaoImpl;
+import com.masai.dao.VendorDao;
+import com.masai.dao.VendorDaoImpl;
+import com.masai.utilities.DBUtil;
+
+public class VendorUser extends User {
+
+	public VendorUser() {
+		super();
+	}
+
+	public VendorUser(String username, String password) {
+		super(username, password);
+	}
+	
+	/*
+1. View all the current Tenders.
+3. View status of a Bid(Whether Selected or Not)
+
+	 */
+	
+	
+	public boolean loginVendor() {
+		
+		VendorDao vdao = new VendorDaoImpl();
+		
+		return vdao.validatePassword(getUsername(), getPassword());
+	}
+	
+	public void bidTender() {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter the Tender Id:");
+		String tid = sc.nextLine();
+		
+		System.out.println("Enter Vendor userId/username");
+		String vid = sc.nextLine();
+		
+		System.out.println("Enter Bid Amount");
+		int bidAmount = Integer.parseInt(sc.nextLine());
+		
+		BidderDao bdao = new BidderDaoImpl();
+		
+		String status = bdao.bidTender(tid, vid, bidAmount);
+		
+		System.out.println(status);
+		
+	}
+
+	public void getAllBidsOfaVendor() {
+		
+		BidderDao bdao = new BidderDaoImpl();
+		
+		List<Bidder> bids = bdao.getAllBidsOfaVendor(this.getUsername());
+		
+		if(bids.isEmpty()) {
+			System.out.println("No Bids Found");
+		}else {
+			int count = 0;
+			for (int i = 0; i < bids.size(); i++) {
+				Bidder b = bids.get(i);
+				System.out.println(count + " Bids Details:");
+				System.out.println("Bid ID" + b.getBid());
+				System.out.println("Tender ID" + b.getTid());
+				System.out.println("Vendor ID" + b.getVid());
+				System.out.println("Bid Amount" + b.getBidAmount());
+				System.out.println("=================================");
+
+				count++;
+			}
+		}
+	}
+	
+	public void getStatusOfABid() {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter the Bid Id");
+		String bidId = sc.nextLine();
+		
+		BidderDao bdao = new BidderDaoImpl();
+		
+		String status = bdao.getSt
+		
+	}
+	
+}
