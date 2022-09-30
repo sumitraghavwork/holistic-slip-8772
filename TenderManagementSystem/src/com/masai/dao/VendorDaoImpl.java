@@ -49,7 +49,7 @@ public class VendorDaoImpl implements VendorDao {
 
 				catch (SQLException e) {
 					e.printStackTrace();
-					status = "Error: " + e.getMessage();
+					status = "Error: " + e.getErrorCode() + " : " + e.getMessage();
 				}
 			}
 		} catch (SQLException e) {
@@ -81,8 +81,7 @@ public class VendorDaoImpl implements VendorDao {
 		try {
 			ps = con.prepareStatement("select * from vendor");
 			rs = ps.executeQuery();
-//			String vid, String vpassword, String vname, String vemail, String vmob, String company,
-//			String address
+
 			while (rs.next()) {
 				Vendor vendor = new Vendor(rs.getString("vid"), rs.getString("vpassword"), rs.getString("vname"),
 						rs.getString("vemail"), rs.getString("vmob"), rs.getString("company"), rs.getString("address"));
@@ -93,8 +92,6 @@ public class VendorDaoImpl implements VendorDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-
-			DBUtil.closeConnection(con);
 
 			DBUtil.closeConnection(rs);
 
@@ -124,8 +121,6 @@ public class VendorDaoImpl implements VendorDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-
-			DBUtil.closeConnection(conn);
 
 			DBUtil.closeConnection(pst);
 
@@ -179,8 +174,6 @@ public class VendorDaoImpl implements VendorDao {
 			e.printStackTrace();
 		} finally {
 
-			DBUtil.closeConnection(con);
-
 			DBUtil.closeConnection(ps);
 		}
 
@@ -197,7 +190,7 @@ public class VendorDaoImpl implements VendorDao {
 
 		if (!dao.validatePassword(vendorId, oldPassword)) {
 
-			status = status + "<br>You Have Enetered Wrong Old Password!";
+			status = status + "You Have Entered Wrong Old Password!";
 
 			return status;
 		}

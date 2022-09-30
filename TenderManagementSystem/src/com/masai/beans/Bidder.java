@@ -1,25 +1,29 @@
 package com.masai.beans;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 public class Bidder {
 
 	private String bid;
 	private String vid;
-	private String tid;
+	private int tid;
 	private int bidAmount;
-//	private Date bidDeadline;
+//	private LocalDate bidDate;
 	private String status;
 
 	public Bidder() {
 		super();
 	}
 
-	public Bidder(String bid, String vid, String tid, int bidAmount, String status) {
+	public Bidder(String bid, String vid, int tid, int bidAmount, String status) {
 		super();
 		this.bid = bid;
 		this.vid = vid;
 		this.tid = tid;
 		this.bidAmount = bidAmount;
 		this.status = status;
+//		this.bidDate = 
 	}
 
 	public String getBid() {
@@ -38,11 +42,11 @@ public class Bidder {
 		this.vid = vid;
 	}
 
-	public String getTid() {
+	public int getTid() {
 		return tid;
 	}
 
-	public void setTid(String tid) {
+	public void setTid(int tid) {
 		this.tid = tid;
 	}
 

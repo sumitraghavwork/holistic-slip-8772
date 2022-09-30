@@ -13,8 +13,9 @@ import com.masai.utilities.DBUtil;
 public class BidderDaoImpl implements BidderDao {
 
 	@Override
-	public String acceptBid(String applicationId, String tenderId, String vendorId) {
-		String status = "Bid Acceptance Failed";
+	public String acceptBid(int tenderId) {
+		
+		String status = "Bid Assignment Failed";
 
 		Connection con = DBUtil.provideConnection();
 
@@ -24,26 +25,33 @@ public class BidderDaoImpl implements BidderDao {
 
 		try {
 
-			ps = con.prepareStatement("select * from tenderstatus where tid=?");
-			ps.setString(1, tenderId);
+			ps = con.prepareStatement("select * from tender where tid=? AND tstatus='Assigned'");
+			ps.setInt(1, tenderId);
 			rs = ps.executeQuery();
 			if (rs.next()) {
-
-				status = "Project Already Assigned";
+				status = "Tender Already Assigned";
 			} else {
+				
+				Bidder bid = bestBids(tenderId);
+				
+				if(bid==null) {
+					status = "No Bids for the Tendor is Found";
+				}else {
+					pst = con.prepareStatement("update bidder set status = ? where bid=? and status=?");
 
-				pst = con.prepareStatement("update bidder set status = ? where bid=? and status=?");
+					pst.setString(1, "Accepted");
+					pst.setString(2, bid.getBid());
+					pst.setString(3, "Pending");
 
-				pst.setString(1, "Accepted");
-				pst.setString(2, applicationId);
-				pst.setString(3, "Pending");
-
-				int x = pst.executeUpdate();
-				if (x > 0) {
-					status = "Bid Has Been Accepted Successfully!";
-					TenderDao dao = new TenderDaoImpl();
-					status = status + "<br>" + dao.assignTender(tenderId, vendorId, applicationId);
+					int x = pst.executeUpdate();
+					if (x > 0) {
+						status = "Bid Has Been Accepted Successfully!";
+						TenderDao dao = new TenderDaoImpl();
+						status = status + "\n" + dao.assignTender(tenderId);
+					}
 				}
+				
+				
 			}
 		} catch (SQLException e) {
 
@@ -59,7 +67,8 @@ public class BidderDaoImpl implements BidderDao {
 	}
 
 	@Override
-	public String rejectBid(String applicationId) {
+	public String rejectBid(int tenderId) {
+		
 		String status = "Bid Rejection Failed";
 
 		Connection con = DBUtil.provideConnection();
@@ -67,10 +76,10 @@ public class BidderDaoImpl implements BidderDao {
 		PreparedStatement ps = null;
 
 		try {
-			ps = con.prepareStatement("update bidder set status = ? where bid=? and status = ?");
+			ps = con.prepareStatement("update bidder set status = ? where tid=? and status = ?");
 
 			ps.setString(1, "Rejected");
-			ps.setString(2, applicationId);
+			ps.setInt(2, tenderId);
 			ps.setString(3, "Pending");
 
 			int x = ps.executeUpdate();
@@ -92,30 +101,24 @@ public class BidderDaoImpl implements BidderDao {
 	}
 
 	@Override
-	public String bidTender(String tenderId, String vendorId, int bidAmount, String bidId) {
+	public String bidTender(Bidder bidder) {
 
 		String status = "Tender Bidding Failed!";
-
-		String bidStatus = "Pending";
-
-		Bidder bidder = new Bidder(bidId, vendorId, tenderId, bidAmount, bidStatus);
-
+		
 		Connection con = DBUtil.provideConnection();
 
 		PreparedStatement ps = null;
 
 		try {
-			ps = con.prepareStatement("insert into bidder values(?,?,?,?,?)");
+			ps = con.prepareStatement("insert into bidder(vid,tid,bidAmount,status,biddate) values(?,?,?,?,sysdate())");
 
-			ps.setString(1, bidId);
+			ps.setString(1, bidder.getVid());
 
-			ps.setString(2, vendorId);
+			ps.setInt(2, bidder.getTid());
 
-			ps.setString(3, tenderId);
+			ps.setInt(3, bidder.getBidAmount());
 
-			ps.setInt(4, bidder.getBidAmount());
-
-			ps.setString(5, bidStatus);
+			ps.setString(4, bidder.getStatus());
 
 			int x = ps.executeUpdate();
 
@@ -136,7 +139,7 @@ public class BidderDaoImpl implements BidderDao {
 	}
 
 	@Override
-	public List<Bidder> getAllBidsOfaTender(String tenderId) {
+	public List<Bidder> getAllBidsOfaTender(int tenderId) {
 
 		List<Bidder> bidderList = new ArrayList<Bidder>();
 
@@ -148,7 +151,7 @@ public class BidderDaoImpl implements BidderDao {
 
 			ps = con.prepareStatement("select * from bidder where tid=?");
 
-			ps.setString(1, tenderId);
+			ps.setInt(1, tenderId);
 
 			rs = ps.executeQuery();
 
@@ -158,7 +161,7 @@ public class BidderDaoImpl implements BidderDao {
 				bidder.setBidAmount(rs.getInt("bidamount"));
 				bidder.setBid(rs.getString("bid"));
 				bidder.setStatus(rs.getString("status"));
-				bidder.setTid(rs.getString("tid"));
+				bidder.setTid(rs.getInt("tid"));
 				bidder.setVid(rs.getString("vid"));
 
 				bidderList.add(bidder);
@@ -197,12 +200,12 @@ public class BidderDaoImpl implements BidderDao {
 
 			while (rs.next()) {
 				Bidder bidder = new Bidder();
-
-				bidder.setBidAmount(rs.getInt("bidamount"));
+				
 				bidder.setBid(rs.getString("bid"));
-				bidder.setStatus(rs.getString("status"));
-				bidder.setTid(rs.getString("tid"));
 				bidder.setVid(rs.getString("vid"));
+				bidder.setTid(rs.getInt("tid"));
+				bidder.setBidAmount(rs.getInt("bidamount"));
+				bidder.setStatus(rs.getString("status"));				
 
 				bidderList.add(bidder);
 			}
@@ -257,6 +260,51 @@ public class BidderDaoImpl implements BidderDao {
 
 		return status;
 
+	}
+
+	@Override
+	public Bidder bestBids(int tendorId) {
+		
+		Bidder bidder = null;
+		
+		Connection con = DBUtil.provideConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			ps = con.prepareStatement("select * from bidder where tid=? AND bidAmount = "
+					+ "(select min(bidAmount) from bidder where tid=?) AND biddate = "
+					+ "(select min(biddate) from bidder where tid=?)");
+
+			ps.setInt(1, tendorId);
+			ps.setInt(2, tendorId);
+			ps.setInt(3, tendorId);
+
+			rs = ps.executeQuery();
+
+			if (rs.next()) {
+				bidder = new Bidder();
+				
+				bidder.setBid(rs.getString("bid"));
+				bidder.setVid(rs.getString("vid"));
+				bidder.setTid(rs.getInt("tid"));
+				bidder.setBidAmount(rs.getInt("bidamount"));
+				bidder.setStatus(rs.getString("status"));
+			}
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		} finally {
+
+			DBUtil.closeConnection(ps);
+
+			DBUtil.closeConnection(rs);
+		}
+
+		
+		return bidder;
 	}
 
 }

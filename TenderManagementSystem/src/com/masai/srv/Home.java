@@ -8,22 +8,30 @@ public class Home {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Welcome To Tender Management System");
+		System.out.println("===========================================================================");
+		System.out.println();
+		System.out.println("******************** Welcome To Tender Management System ****************");
+		System.out.println();
+		System.out.println("===========================================================================");
 
 		while (true) {
-
+			
 			System.out.println("Do You Want to Login ? : {Y/N}");
 			String choice = sc.nextLine();
 
 			if (choice.equalsIgnoreCase("N")) {
+				System.out.println("=================================");
 				System.out.println("Thank You for using our System.");
+				System.out.println("=================================");
 				break;
 			} else {
 				System.out.println("Choose User Type: \n" + "1. Admin \n" + "2. Vendor");
 				int key = Integer.parseInt(sc.nextLine());
 
 				if (key < 1 || key > 2) {
+					System.out.println("=================================");
 					System.out.println("Invalid Choice! " + key);
+					System.out.println("=================================");
 				} else {
 					System.out.println("Enter username");
 					String uname = sc.nextLine();
@@ -58,13 +66,23 @@ public class Home {
 		while (true) {
 			System.out.println("Enter Choice of Operation: \n"
 					+ "1. Register new Vendor. (assign a new username and password to him) \n"
-					+ "2. View all the vendors. \n" + "3. Create new tenders. \n" + "4. View All the Tenders. \n"
-					+ "5. View All the Bids of a tender. \n" + "6. Assign tender to a vendor. \n"
-					+ "7. Logout and Exit from Admin Account.");
+					+ "2. View all the vendors. \n" 
+					+ "3. Create new tenders. \n" 
+					+ "4. View All the Tenders. \n"
+					+ "5. View All the Bids of a tender. \n" 
+					+ "6. Assign tender to a vendor. \n"
+					+ "7. View All the Assigned tenders. \n" 
+					+ "8. View Tender by ID. \n" 
+					+ "9. Update a Tendor. \n"
+//					+ "10. Remove a Tendor. \n"
+					+ "10. Logout and Exit from Admin Account.");
 
 			int key = Integer.parseInt(sc.nextLine());
 
-			if (key == 7) {
+			if (key == 10) {
+				System.out.println("=================================");
+				System.out.println("Logout Succesful \nReturning to Home");
+				System.out.println("=================================");
 				return;
 			}
 
@@ -95,8 +113,26 @@ public class Home {
 				user.assignTender();
 				break;
 			}
+			case 7: {
+				user.getAllAssignedTenders();
+				break;
+			}
+			case 8: {
+				user.getTenderDataById();;
+				break;
+			}
+			case 9: {
+				user.updateTender();
+				break;
+			}
+//			case 10: {
+//				user.removeTender();
+//				break;
+//			}
 			default:
+				System.out.println("=================================");
 				System.out.println("Invalid Choice");
+				System.out.println("=================================");
 				break;
 			}
 
@@ -116,12 +152,15 @@ public class Home {
 			int key = Integer.parseInt(sc.nextLine());
 
 			if (key == 6) {
+				System.out.println("=================================");
+				System.out.println("Logout Succesful \nReturning to Home");
+				System.out.println("=================================");
 				return;
 			}
 
 			switch (key) {
 			case 1: {
-				user.viewAllTendors();
+				user.viewAllCurrentTendors();
 				break;
 			}
 			case 2: {
@@ -144,7 +183,9 @@ public class Home {
 				break;
 			}
 			default:
+				System.out.println("=================================");
 				System.out.println("Invalid Choice");
+				System.out.println("=================================");
 				break;
 			}
 

@@ -28,10 +28,15 @@ public class VendorUser extends User {
 		VendorDao vdao = new VendorDaoImpl();
 
 		if (vdao.validatePassword(getUsername(), getPassword())) {
+
+			System.out.println("============================================");
 			System.out.println("Login Succesfull");
+			System.out.println("============================================");
 			return true;
 		} else {
+			System.out.println("============================================");
 			System.out.println("Login Denied! Invalid User Details");
+			System.out.println("============================================");
 			return false;
 		}
 	}
@@ -58,34 +63,44 @@ public class VendorUser extends User {
 		System.out.println("Address");
 		vendor.setAddress(sc.nextLine());
 
-		VendorDao vdao = new VendorDaoImpl();
+		String status = new VendorDaoImpl().updateProfile(vendor);
+		
 
-		String status = vdao.updateProfile(vendor);
-
+		System.out.println("============================================");
 		System.out.println(status);
+		System.out.println("============================================");
 	}
 
-	public void viewAllTendors() {
+	public void viewAllCurrentTendors() {
 
 		TenderDao tdao = new TenderDaoImpl();
 
 		List<Tender> tenders = tdao.getAllTenders();
 
-		if (tenders.isEmpty())
+		if (tenders.isEmpty()) {
+			System.out.println("============================================");
 			System.out.println("No Tenders Found");
-		else {
+			System.out.println("============================================");
+		}else {
+
+			System.out.println("============================================");
 			int count = 1;
 			for (int i = 0; i < tenders.size(); i++) {
 				Tender t = tenders.get(i);
-				System.out.println(count + " Tender Details:");
-				System.out.println("ID " + t.getTid());
-				System.out.println("Title " + t.getTname());
-				System.out.println("Price " + t.getTprice());
-				System.out.println("Type " + t.getTtype());
-				System.out.println("Description " + t.getTdesc());
-				System.out.println("=================================");
-
-				count++;
+				if(t.getTstatus().equalsIgnoreCase("Not Assigned")) {
+					
+					System.out.println(count + " Tender Details:");
+					System.out.println("*ID: " + t.getTid());
+					System.out.println("*Title: " + t.getTname());
+					System.out.println("*Price: " + t.getTprice());
+					System.out.println("*Type: " + t.getTtype());
+					System.out.println("*Description: " + t.getTdesc());
+					System.out.println("*Status: " + t.getTstatus());
+					System.out.println("=================================");
+					
+					count++;
+				}
+				
 			}
 		}
 
@@ -94,21 +109,30 @@ public class VendorUser extends User {
 	public void bidTender() {
 
 		Scanner sc = new Scanner(System.in);
-
+		
 		System.out.println("Enter the Tender Id:");
-		String tid = sc.nextLine();
+		int tid = Integer.parseInt(sc.nextLine());
+		
+		Tender t = new TenderDaoImpl().getTenderDataById(tid);
+		
+		if(t == null || t.getTstatus().equalsIgnoreCase("Assigned")) {
 
+			System.out.println("============================================");
+			System.out.println("Tender: " + tid + " not Found");
+			System.out.println("============================================");
+		}
+		
 		System.out.println("Enter Bid Amount");
 		int bidAmount = Integer.parseInt(sc.nextLine());
 
-		System.out.println("Enter Bid Id");
-		String bidId = sc.nextLine();
-
 		BidderDao bdao = new BidderDaoImpl();
+		
+		String status = bdao.bidTender(new Bidder("tempBidID",this.getUsername(),tid,bidAmount,"Pending"));
+		
 
-		String status = bdao.bidTender(tid, this.getUsername(), bidAmount, bidId);
-
+		System.out.println("============================================");
 		System.out.println(status);
+		System.out.println("============================================");
 
 	}
 
@@ -119,16 +143,19 @@ public class VendorUser extends User {
 		List<Bidder> bids = bdao.getAllBidsOfaVendor(this.getUsername());
 
 		if (bids.isEmpty()) {
+			System.out.println("============================================");
 			System.out.println("No Bids Found");
+			System.out.println("============================================");
 		} else {
 			int count = 1;
 			for (int i = 0; i < bids.size(); i++) {
 				Bidder b = bids.get(i);
 				System.out.println(count + " Bids Details:");
-				System.out.println("Bid ID " + b.getBid());
-				System.out.println("Tender ID " + b.getTid());
-				System.out.println("Vendor ID " + b.getVid());
-				System.out.println("Bid Amount " + b.getBidAmount());
+				System.out.println("*Bid ID: " + b.getBid());
+				System.out.println("*Tender ID: " + b.getTid());
+				System.out.println("*Vendor ID: " + b.getVid());
+				System.out.println("*Bid Amount: " + b.getBidAmount());
+				System.out.println("*Bid Status: " + b.getStatus());
 				System.out.println("=================================");
 
 				count++;
@@ -141,13 +168,15 @@ public class VendorUser extends User {
 		Scanner sc = new Scanner(System.in);
 
 		System.out.println("Enter the Bid Id");
-		String bidId = sc.nextLine();
+		String bid = sc.nextLine();
 
 		BidderDao bdao = new BidderDaoImpl();
 
-		String status = bdao.getStatusOfABid(bidId);
-
-		System.out.println("Status for " + bidId + " is " + status);
+		String status = bdao.getStatusOfABid(bid);
+		
+		System.out.println("============================================");
+		System.out.println("Status for Bid Id: " + bid + " is " + status);
+		System.out.println("============================================");
 
 	}
 

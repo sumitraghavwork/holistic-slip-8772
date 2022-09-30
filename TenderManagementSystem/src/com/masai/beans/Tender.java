@@ -2,31 +2,33 @@ package com.masai.beans;
 
 public class Tender {
 
-	private String tid;
+	private int tid;
 	private String tname;
 	private String ttype;
 	private int tprice;
 	private String tdesc;
+	private String tstatus;
 //	private String tdeadline;
 
 	public Tender() {
 		super();
 	}
 
-	public Tender(String tid, String tname, String ttype, int tprice, String tdesc) {
+	public Tender(int tid, String tname, String ttype, int tprice, String tdesc, String tstatus) {
 		super();
 		this.tid = tid;
 		this.tname = tname;
 		this.ttype = ttype;
 		this.tprice = tprice;
 		this.tdesc = tdesc;
+		this.tstatus = tstatus;
 	}
 
-	public String getTid() {
+	public int getTid() {
 		return tid;
 	}
 
-	public void setTid(String tid) {
+	public void setTid(int tid) {
 		this.tid = tid;
 	}
 
@@ -62,10 +64,18 @@ public class Tender {
 		this.tdesc = tdesc;
 	}
 
+	public String getTstatus() {
+		return tstatus;
+	}
+
+	public void setTstatus(String tstatus) {
+		this.tstatus = tstatus;
+	}
+
 	@Override
 	public String toString() {
 		return "Tender [tid=" + tid + ", tname=" + tname + ", ttype=" + ttype + ", tprice=" + tprice + ", tdesc="
-				+ tdesc + "]";
+				+ tdesc + ", tstatus=" + tstatus + "]";
 	}
 
 }
