@@ -8,73 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.masai.beans.Tender;
-import com.masai.beans.TenderStatus;
 import com.masai.utilities.DBUtil;
 
 public class TenderDaoImpl implements TenderDao {
 
 	@Override
-	public List<Tender> getTenderDetails(String tid) {
-		List<Tender> tenderList = new ArrayList<Tender>();
-
-		Connection con = DBUtil.provideConnection();
-
-		PreparedStatement ps = null;
-		PreparedStatement pst = null;
-		try {
-
-			ps = con.prepareStatement("select * from tender where tid=?");
-
-			ps.setString(1, tid);
-
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next()) {
-				Tender tender = new Tender();
-				String id = rs.getString(1);
-				String name = rs.getString(2);
-				String type = rs.getString(3);
-				int price = rs.getInt(4);
-				String desc = rs.getString(5);
-
-				tender = new Tender(id, name, type, price, desc);
-				tenderList.add(tender);
-			} else {
-				pst = con.prepareStatement("select * from tender where tname like '%" + tid + "%'");
-
-				ResultSet rss = pst.executeQuery();
-
-				while (rss.next()) {
-					Tender tender = new Tender();
-					String id = rss.getString(1);
-					String name = rss.getString(2);
-					String type = rss.getString(3);
-					int price = rss.getInt(4);
-					String desc = rss.getString(5);
-					tender = new Tender(id, name, type, price, desc);
-					tenderList.add(tender);
-				}
-
-			}
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-
-			DBUtil.closeConnection(ps);
-
-			DBUtil.closeConnection(pst);
-
-			DBUtil.closeConnection(con);
-
-		}
-
-		return tenderList;
-	}
-
-	@Override
 	public List<Tender> getAllTenders() {
+
 		List<Tender> tenderList = new ArrayList<Tender>();
 
 		Connection con = DBUtil.provideConnection();
@@ -89,11 +29,12 @@ public class TenderDaoImpl implements TenderDao {
 			while (rs.next()) {
 				Tender tender = new Tender();
 
-				tender.setTid(rs.getString("tid"));
+				tender.setTid(rs.getInt("tid"));
 				tender.setTname(rs.getString("tname"));
 				tender.setTtype(rs.getString("ttype"));
 				tender.setTprice(rs.getInt("tprice"));
 				tender.setTdesc(rs.getString("tdesc"));
+				tender.setTstatus(rs.getString("tstatus"));
 				tenderList.add(tender);
 			}
 
@@ -124,26 +65,30 @@ public class TenderDaoImpl implements TenderDao {
 		PreparedStatement ps = null;
 
 		try {
-			ps = conn.prepareStatement("select * from tender where tid=?");
+			ps = conn.prepareStatement("select * from tender where tname=? AND ttype=? AND tprice=? AND tdesc=?");
 
-			ps.setString(1, tender.getTid());
+			ps.setString(1, tender.getTname());
+			ps.setString(2, tender.getTtype());
+			ps.setInt(3, tender.getTprice());
+			ps.setString(4, tender.getTdesc());
 
 			ResultSet rs = ps.executeQuery();
 
 			if (rs.next()) {
-				status = "Tender Declined!<br>Tender Id already Exists";
+				status = "Tender Declined! \nTender already Exists with ID: " + rs.getInt("tid");
 			} else {
 				try {
-					pst = conn.prepareStatement("insert into tender values(?,?,?,?,?)");
-					pst.setString(1, tender.getTid());
-					pst.setString(2, tender.getTname());
-					pst.setString(3, tender.getTdesc());
-					pst.setInt(4, tender.getTprice());
-					pst.setString(5, tender.getTdesc());
+					pst = conn.prepareStatement("insert into tender(tname,ttype,tprice,tdesc,tstatus) values(?,?,?,?,?)");
+	
+					pst.setString(1, tender.getTname());
+					pst.setString(2, tender.getTtype());
+					pst.setInt(3, tender.getTprice());
+					pst.setString(4, tender.getTdesc());
+					pst.setString(5, tender.getTstatus());
 
 					int x = pst.executeUpdate();
 					if (x > 0)
-						status = "New Tender Inserted<br> Your Tender id: " + tender.getTid();
+						status = "New Tender Inserted \nYour Tender ID: " + getTenderId(tender);
 				} catch (SQLException e) {
 
 					status = "Error : " + e.getMessage();
@@ -157,6 +102,7 @@ public class TenderDaoImpl implements TenderDao {
 			status = "Error : " + e.getMessage();
 
 			e.printStackTrace();
+
 		} finally {
 
 			DBUtil.closeConnection(pst);
@@ -169,42 +115,83 @@ public class TenderDaoImpl implements TenderDao {
 
 		return status;
 	}
-
+	
 	@Override
-	public boolean removeTender(String tid) {
-		boolean flag = false;
+	public int getTenderId(Tender tender) {
 
-		Connection con = DBUtil.provideConnection();
+		int tid = -1;
+
+		Connection conn = DBUtil.provideConnection();
 
 		PreparedStatement ps = null;
+
 		try {
+			ps = conn.prepareStatement("select * from tender where tname=? AND ttype=? AND tprice=? AND tdesc=?");
 
-			ps = con.prepareStatement("delete from tender where tid=?");
+			ps.setString(1, tender.getTname());
+			ps.setString(2, tender.getTtype());
+			ps.setInt(3, tender.getTprice());
+			ps.setString(4, tender.getTdesc());
 
-			ps.setString(1, tid);
+			ResultSet rs = ps.executeQuery();
 
-			int x = ps.executeUpdate();
+			if (rs.next()) {
+				tid = rs.getInt("tid");
+			} 
 
-			if (x > 0) {
-
-				flag = true;
-
-			}
 		} catch (SQLException e) {
+
 			e.printStackTrace();
+
 		} finally {
 
 			DBUtil.closeConnection(ps);
 
-			DBUtil.closeConnection(con);
+			DBUtil.closeConnection(conn);
 
 		}
 
-		return flag;
+		return tid;
 	}
+
+//	@Override
+//	public boolean removeTender(int tid) {
+//
+//		boolean flag = false;
+//
+//		Connection con = DBUtil.provideConnection();
+//
+//		PreparedStatement ps = null;
+//		
+//		try {
+//
+//			ps = con.prepareStatement("delete from tender where tid=?");
+//
+//			ps.setInt(1, tid);
+//
+//			int x = ps.executeUpdate();
+//
+//			if (x > 0) {
+//
+//				flag = true;
+//
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} finally {
+//
+//			DBUtil.closeConnection(ps);
+//
+//			DBUtil.closeConnection(con);
+//
+//		}
+//
+//		return flag;
+//	}
 
 	@Override
 	public String updateTender(Tender tender) {
+
 		String status = "Tender Updation Failed!";
 
 		Connection con = DBUtil.provideConnection();
@@ -212,14 +199,17 @@ public class TenderDaoImpl implements TenderDao {
 		PreparedStatement pst = null;
 
 		try {
-			pst = con.prepareStatement("UPDATE tender SET tname=?,ttype=?,tprice=?,tdesc=?,tdesc=?, where tid=?");
+			pst = con.prepareStatement(
+					"UPDATE tender SET tname=?,ttype=?,tprice=?,tdesc=?, tstatus=? where tid=?");
 
 			pst.setString(1, tender.getTname());
-			pst.setString(2, tender.getTdesc());
+			pst.setString(2, tender.getTtype());
 			pst.setInt(3, tender.getTprice());
 			pst.setString(4, tender.getTdesc());
-			pst.setString(7, tender.getTid());
-
+			pst.setString(5, tender.getTstatus());
+			
+			pst.setInt(6, tender.getTid());
+			
 			int x = pst.executeUpdate();
 			if (x > 0)
 				status = "TENDER DETAILS UPDATED SUCCSESFULLY";
@@ -239,30 +229,31 @@ public class TenderDaoImpl implements TenderDao {
 	}
 
 	@Override
-	public Tender getTenderDataById(String tid) {
+	public Tender getTenderDataById(int tid) {
 
 		Tender tender = null;
 
 		Connection con = DBUtil.provideConnection();
 
 		PreparedStatement ps = null;
-		PreparedStatement pst = null;
+
 		try {
 
 			ps = con.prepareStatement("select * from tender where tid=?");
 
-			ps.setString(1, tid);
+			ps.setInt(1, tid);
 
 			ResultSet rs = ps.executeQuery();
 
 			if (rs.next()) {
-				String id = rs.getString(1);
+				int id = rs.getInt(1);
 				String name = rs.getString(2);
 				String type = rs.getString(3);
 				int price = rs.getInt(4);
 				String desc = rs.getString(5);
+				String status = rs.getString(6);
 
-				tender = new Tender(id, name, type, price, desc);
+				tender = new Tender(id, name, type, price, desc, status);
 			}
 
 		} catch (SQLException e) {
@@ -272,8 +263,6 @@ public class TenderDaoImpl implements TenderDao {
 
 			DBUtil.closeConnection(ps);
 
-			DBUtil.closeConnection(pst);
-
 			DBUtil.closeConnection(con);
 
 		}
@@ -282,7 +271,8 @@ public class TenderDaoImpl implements TenderDao {
 	}
 
 	@Override
-	public String getTenderStatus(String tenderId) {
+	public String getTenderStatus(int tenderId) {
+
 		String status = "Not Assigned";
 
 		Connection con = DBUtil.provideConnection();
@@ -292,16 +282,16 @@ public class TenderDaoImpl implements TenderDao {
 		ResultSet rs = null;
 
 		try {
-			ps = con.prepareStatement("select * from tenderstatus where tid=?");
+			ps = con.prepareStatement("select * from tender where tid=?");
 
-			ps.setString(1, tenderId);
+			ps.setInt(1, tenderId);
 
 			rs = ps.executeQuery();
 
 			if (rs.next()) {
-				// Tender Has been Assigned
-
-				status = "Assigned";
+				status = rs.getString("tstatus");
+			} else {
+				status = "Tendor Id Not Found: " + tenderId;
 			}
 
 		} catch (SQLException e) {
@@ -318,7 +308,8 @@ public class TenderDaoImpl implements TenderDao {
 	}
 
 	@Override
-	public String assignTender(String tenderId, String vendorId, String bidderId) {
+	public String assignTender(int tenderId) {
+
 		String status = "Tender Assigning failed";
 
 		Connection con = DBUtil.provideConnection();
@@ -327,39 +318,30 @@ public class TenderDaoImpl implements TenderDao {
 		ResultSet rs = null;
 
 		try {
-			ps = con.prepareStatement("select * from tenderstatus where tid=?");
-			ps.setString(1, tenderId);
+			ps = con.prepareStatement("update tender set tstatus='Assigned' where tid=?");
+			ps.setInt(1, tenderId);
 
-			rs = ps.executeQuery();
-
-			if (rs.next()) {
-
-				status = "Tender is Already Assigned to Vendor: " + rs.getString("vid");
-			} else {
-
-				ps = con.prepareStatement("insert into tenderstatus values(?,?,?,?)");
-				ps.setString(1, tenderId);
-				ps.setString(2, bidderId);
-				ps.setString(3, "Assigned");
-				ps.setString(4, vendorId);
-
-				int k = ps.executeUpdate();
-				if (k > 0) {
-					status = "Tender: " + tenderId + " has been Assigned to vendor: " + vendorId;
-				}
-
+			int k = ps.executeUpdate();
+			if (k > 0) {
+				status = "Tender: " + tenderId + " has been Assigned";
 			}
+
 		} catch (SQLException e) {
 			status = status + e.getMessage();
 			e.printStackTrace();
+		} finally {
+			DBUtil.closeConnection(ps);
+			DBUtil.closeConnection(rs);
+			DBUtil.closeConnection(con);
 		}
 
 		return status;
 	}
 
 	@Override
-	public List<TenderStatus> getAllAssignedTenders() {
-		List<TenderStatus> statusList = new ArrayList<TenderStatus>();
+	public List<Tender> getAllAssignedTenders() {
+
+		List<Tender> statusList = new ArrayList<Tender>();
 
 		Connection con = DBUtil.provideConnection();
 
@@ -369,16 +351,22 @@ public class TenderDaoImpl implements TenderDao {
 
 		try {
 
-			ps = con.prepareStatement("select * from tenderstatus");
+			ps = con.prepareStatement("select * from tender where tstatus='Assigned'");
 
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
 
-				TenderStatus status = new TenderStatus(rs.getString("tid"), rs.getString("bid"), rs.getString("status"),
-						rs.getString("vid"));
+				Tender tender = new Tender();
 
-				statusList.add(status);
+				tender.setTid(rs.getInt("tid"));
+				tender.setTname(rs.getString("tname"));
+				tender.setTtype(rs.getString("ttype"));
+				tender.setTprice(rs.getInt("tprice"));
+				tender.setTdesc(rs.getString("tdesc"));
+				tender.setTstatus(rs.getString("tstatus"));
+
+				statusList.add(tender);
 			}
 
 		} catch (SQLException e) {

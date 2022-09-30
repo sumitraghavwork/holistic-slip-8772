@@ -6,15 +6,18 @@ import com.masai.beans.Bidder;
 
 public interface BidderDao {
 
-	public String acceptBid(String applicationId, String tenderId, String vendorId);
+	public String acceptBid(int tenderId);
 
-	public String rejectBid(String applicationId);
+	public String rejectBid(int tendorId);
 
-	public String bidTender(String tenderId, String vendorId, int bidAmount,String bidId);
+	public String bidTender(Bidder bidder);
 
-	public List<Bidder> getAllBidsOfaTender(String tenderId);
+	public List<Bidder> getAllBidsOfaTender(int tenderId);
 
 	public List<Bidder> getAllBidsOfaVendor(String vendorId);
-	
+
 	public String getStatusOfABid(String bidId);
+	
+	public Bidder bestBids(int tendorId); 
+
 }
