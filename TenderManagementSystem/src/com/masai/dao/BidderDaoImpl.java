@@ -40,7 +40,7 @@ public class BidderDaoImpl implements BidderDao {
 					pst = con.prepareStatement("update bidder set status = ? where bid=? and status=?");
 
 					pst.setString(1, "Accepted");
-					pst.setString(2, bid.getBid());
+					pst.setInt(2, bid.getBid());
 					pst.setString(3, "Pending");
 
 					int x = pst.executeUpdate();
@@ -62,6 +62,8 @@ public class BidderDaoImpl implements BidderDao {
 			DBUtil.closeConnection(con);
 
 			DBUtil.closeConnection(ps);
+			
+			DBUtil.closeConnection(pst);
 		}
 		return status;
 	}
@@ -159,7 +161,7 @@ public class BidderDaoImpl implements BidderDao {
 				Bidder bidder = new Bidder();
 
 				bidder.setBidAmount(rs.getInt("bidamount"));
-				bidder.setBid(rs.getString("bid"));
+				bidder.setBid(rs.getInt("bid"));
 				bidder.setStatus(rs.getString("status"));
 				bidder.setTid(rs.getInt("tid"));
 				bidder.setVid(rs.getString("vid"));
@@ -201,7 +203,7 @@ public class BidderDaoImpl implements BidderDao {
 			while (rs.next()) {
 				Bidder bidder = new Bidder();
 				
-				bidder.setBid(rs.getString("bid"));
+				bidder.setBid(rs.getInt("bid"));
 				bidder.setVid(rs.getString("vid"));
 				bidder.setTid(rs.getInt("tid"));
 				bidder.setBidAmount(rs.getInt("bidamount"));
@@ -226,7 +228,7 @@ public class BidderDaoImpl implements BidderDao {
 	}
 
 	@Override
-	public String getStatusOfABid(String bidId) {
+	public String getStatusOfABid(int bidId) {
 
 		String status = "Bid Not Found";
 
@@ -238,7 +240,7 @@ public class BidderDaoImpl implements BidderDao {
 
 			ps = con.prepareStatement("select * from bidder where bid=?");
 
-			ps.setString(1, bidId);
+			ps.setInt(1, bidId);
 
 			rs = ps.executeQuery();
 
@@ -286,7 +288,7 @@ public class BidderDaoImpl implements BidderDao {
 			if (rs.next()) {
 				bidder = new Bidder();
 				
-				bidder.setBid(rs.getString("bid"));
+				bidder.setBid(rs.getInt("bid"));
 				bidder.setVid(rs.getString("vid"));
 				bidder.setTid(rs.getInt("tid"));
 				bidder.setBidAmount(rs.getInt("bidamount"));

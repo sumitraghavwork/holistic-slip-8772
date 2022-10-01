@@ -16,7 +16,7 @@ public interface BidderDao {
 
 	public List<Bidder> getAllBidsOfaVendor(String vendorId);
 
-	public String getStatusOfABid(String bidId);
+	public String getStatusOfABid(int bidId);
 	
 	public Bidder bestBids(int tendorId); 
 

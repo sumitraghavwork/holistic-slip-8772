@@ -84,6 +84,8 @@ public class VendorUser extends User {
 		}else {
 
 			System.out.println("============================================");
+			System.out.println("List of ALL Current Not Assigned Tenders: ");
+			System.out.println("============================================");
 			int count = 1;
 			for (int i = 0; i < tenders.size(); i++) {
 				Tender t = tenders.get(i);
@@ -127,7 +129,7 @@ public class VendorUser extends User {
 
 		BidderDao bdao = new BidderDaoImpl();
 		
-		String status = bdao.bidTender(new Bidder("tempBidID",this.getUsername(),tid,bidAmount,"Pending"));
+		String status = bdao.bidTender(new Bidder(0,this.getUsername(),tid,bidAmount,"Pending"));
 		
 
 		System.out.println("============================================");
@@ -147,6 +149,9 @@ public class VendorUser extends User {
 			System.out.println("No Bids Found");
 			System.out.println("============================================");
 		} else {
+			System.out.println("============================================");
+			System.out.println("List of Bids For Vendor: " + this.getUsername());
+			System.out.println("============================================");
 			int count = 1;
 			for (int i = 0; i < bids.size(); i++) {
 				Bidder b = bids.get(i);
@@ -168,7 +173,7 @@ public class VendorUser extends User {
 		Scanner sc = new Scanner(System.in);
 
 		System.out.println("Enter the Bid Id");
-		String bid = sc.nextLine();
+		int bid = Integer.parseInt(sc.nextLine());
 
 		BidderDao bdao = new BidderDaoImpl();
 

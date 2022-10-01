@@ -239,6 +239,7 @@ public class Admin extends User {
 		int tid = Integer.parseInt(sc.nextLine());
 
 		BidderDao bdao = new BidderDaoImpl();
+		
 		if (bdao.getAllBidsOfaTender(tid).isEmpty()) {
 			System.out.println("============================================");
 			System.out.println("No Bids Filed for tender Id: " + tid);
