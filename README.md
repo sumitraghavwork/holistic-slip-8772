@@ -9,14 +9,13 @@
 <br>
 
 <h2 align="left">The Role of Administrator is</h2>
-<h3 align="left">
- 1. Create new Vendor.
- 2.View all the vendors.
- 3.Create new tenders.
- 4.View All the Tenders.
- 5.View All the Bids of a tender.
- 6.Assign a Tendor.
-</h3>
+<h3 align="left">1. Create new Vendor.</h3>
+<h3 align="left">2.View all the vendors.</h3>
+<h3 align="left">3.Create new tenders.</h3>
+<h3 align="left">4.View All the Tenders.</h3>
+<h3 align="left">5.View All the Bids of a tender.</h3>
+<h3 align="left">6.Assign a Tendor.</h3>
+
 <br>
 
 
