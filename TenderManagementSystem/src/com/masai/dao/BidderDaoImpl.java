@@ -228,7 +228,7 @@ public class BidderDaoImpl implements BidderDao {
 	}
 
 	@Override
-	public String getStatusOfABid(int bidId) {
+	public String getStatusOfABid(int tid,String vendorId) {
 
 		String status = "Bid Not Found";
 
@@ -238,9 +238,10 @@ public class BidderDaoImpl implements BidderDao {
 
 		try {
 
-			ps = con.prepareStatement("select * from bidder where bid=?");
+			ps = con.prepareStatement("select * from bidder where tid=? AND vid=?");
 
-			ps.setInt(1, bidId);
+			ps.setInt(1, tid);
+			ps.setString(2, vendorId);
 
 			rs = ps.executeQuery();
 

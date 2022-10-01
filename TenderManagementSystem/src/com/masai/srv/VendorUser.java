@@ -172,15 +172,15 @@ public class VendorUser extends User {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Enter the Bid Id");
-		int bid = Integer.parseInt(sc.nextLine());
+		System.out.println("Enter the Tender Id to get Its Bid Status");
+		int tid = Integer.parseInt(sc.nextLine());
 
 		BidderDao bdao = new BidderDaoImpl();
 
-		String status = bdao.getStatusOfABid(bid);
+		String status = bdao.getStatusOfABid(tid,this.getUsername());
 		
 		System.out.println("============================================");
-		System.out.println("Status for Bid Id: " + bid + " is " + status);
+		System.out.println("Status for Bid on Tender id : " + tid + " is " + status);
 		System.out.println("============================================");
 
 	}
