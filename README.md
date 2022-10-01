@@ -42,7 +42,8 @@
 
 <h1 align="center">Acknowledgements</h1>
 
- - [Live Project Link]()
+- [Live Project Link]()
+
 ## Authors
 
 - [@sumitraghavwork](https://github.com/sumitraghavwork)
