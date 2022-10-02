@@ -56,7 +56,7 @@ public class BidderDaoImpl implements BidderDao {
 		} catch (SQLException e) {
 
 			status = status + "Error: " + e.getMessage();
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(con);
@@ -91,7 +91,7 @@ public class BidderDaoImpl implements BidderDao {
 		} catch (SQLException e) {
 
 			status = status + "Error: " + e.getMessage();
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(con);
@@ -128,8 +128,8 @@ public class BidderDaoImpl implements BidderDao {
 				status = "You have successfully Bid for the tender";
 
 		} catch (SQLException e) {
-
-			e.printStackTrace();
+			status = status + " Duplicate Bid Found or Invalid Tender Details Found";
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(con);
@@ -170,8 +170,10 @@ public class BidderDaoImpl implements BidderDao {
 			}
 
 		} catch (SQLException e) {
+//			System.out.println("No Bids Found.........");
+//			e.printStackTrace();
 
-			e.printStackTrace();
+			System.out.println("Exception occurred....");
 		} finally {
 
 			DBUtil.closeConnection(con);
@@ -214,7 +216,8 @@ public class BidderDaoImpl implements BidderDao {
 
 		} catch (SQLException e) {
 
-			e.printStackTrace();
+			System.out.println("Exception occurred....");
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(con);
@@ -250,8 +253,8 @@ public class BidderDaoImpl implements BidderDao {
 			}
 
 		} catch (SQLException e) {
-
-			e.printStackTrace();
+			status = status + " Exception Occured";
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(con);
@@ -298,7 +301,8 @@ public class BidderDaoImpl implements BidderDao {
 
 		} catch (SQLException e) {
 
-			e.printStackTrace();
+			System.out.println("Exception occurred....");
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(ps);

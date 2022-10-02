@@ -40,7 +40,8 @@ public class TenderDaoImpl implements TenderDao {
 
 		} catch (SQLException e) {
 
-			e.printStackTrace();
+			System.out.println("Exception occurred....");
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(ps);
@@ -93,7 +94,7 @@ public class TenderDaoImpl implements TenderDao {
 
 					status = "Error : " + e.getMessage();
 
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
 
@@ -101,7 +102,7 @@ public class TenderDaoImpl implements TenderDao {
 
 			status = "Error : " + e.getMessage();
 
-			e.printStackTrace();
+//			e.printStackTrace();
 
 		} finally {
 
@@ -141,7 +142,8 @@ public class TenderDaoImpl implements TenderDao {
 
 		} catch (SQLException e) {
 
-			e.printStackTrace();
+			System.out.println("Exception occurred....");
+//			e.printStackTrace();
 
 		} finally {
 
@@ -216,7 +218,7 @@ public class TenderDaoImpl implements TenderDao {
 
 		} catch (SQLException e) {
 			status = "Error: " + e.getMessage();
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(pst);
@@ -258,7 +260,9 @@ public class TenderDaoImpl implements TenderDao {
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+
+			System.out.println("Exception occurred....");
 		} finally {
 
 			DBUtil.closeConnection(ps);
@@ -296,7 +300,7 @@ public class TenderDaoImpl implements TenderDao {
 
 		} catch (SQLException e) {
 			status = "Error: " + e.getMessage();
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(con);
@@ -328,7 +332,7 @@ public class TenderDaoImpl implements TenderDao {
 
 		} catch (SQLException e) {
 			status = status + e.getMessage();
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 			DBUtil.closeConnection(ps);
 			DBUtil.closeConnection(rs);
@@ -371,7 +375,8 @@ public class TenderDaoImpl implements TenderDao {
 
 		} catch (SQLException e) {
 
-			e.printStackTrace();
+			System.out.println("Exception occurred....");
+//			e.printStackTrace();
 		}
 
 		finally {

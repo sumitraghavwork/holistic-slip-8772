@@ -48,12 +48,12 @@ public class VendorDaoImpl implements VendorDao {
 				}
 
 				catch (SQLException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 					status = "Error: " + e.getErrorCode() + " : " + e.getMessage();
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			status = "Error: " + e.getErrorCode() + " : " + e.getMessage();
 		}
 
@@ -90,7 +90,8 @@ public class VendorDaoImpl implements VendorDao {
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.out.println("Exception occurred....");
 		} finally {
 
 			DBUtil.closeConnection(rs);
@@ -119,7 +120,9 @@ public class VendorDaoImpl implements VendorDao {
 				flag = true;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.out.println("Exception occurred....");
+			
 		} finally {
 
 			DBUtil.closeConnection(pst);
@@ -171,7 +174,7 @@ public class VendorDaoImpl implements VendorDao {
 
 			status = "Error: " + e.getMessage();
 
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(ps);
@@ -213,9 +216,9 @@ public class VendorDaoImpl implements VendorDao {
 
 		} catch (SQLException e) {
 
-			status = status + "<br>Error: " + e.getMessage();
+			status = status + " Error: " + e.getMessage();
 
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(con);
@@ -251,7 +254,8 @@ public class VendorDaoImpl implements VendorDao {
 
 		} catch (SQLException e) {
 
-			e.printStackTrace();
+			System.out.println("Exception occurred....");
+//			e.printStackTrace();
 		} finally {
 
 			DBUtil.closeConnection(con);

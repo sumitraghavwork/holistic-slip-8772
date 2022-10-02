@@ -64,7 +64,6 @@ public class VendorUser extends User {
 		vendor.setAddress(sc.nextLine());
 
 		String status = new VendorDaoImpl().updateProfile(vendor);
-		
 
 		System.out.println("============================================");
 		System.out.println(status);
@@ -81,7 +80,7 @@ public class VendorUser extends User {
 			System.out.println("============================================");
 			System.out.println("No Tenders Found");
 			System.out.println("============================================");
-		}else {
+		} else {
 
 			System.out.println("============================================");
 			System.out.println("List of ALL Current Not Assigned Tenders: ");
@@ -89,8 +88,8 @@ public class VendorUser extends User {
 			int count = 1;
 			for (int i = 0; i < tenders.size(); i++) {
 				Tender t = tenders.get(i);
-				if(t.getTstatus().equalsIgnoreCase("Not Assigned")) {
-					
+				if (t.getTstatus().equalsIgnoreCase("Not Assigned")) {
+
 					System.out.println(count + " Tender Details:");
 					System.out.println("*ID: " + t.getTid());
 					System.out.println("*Title: " + t.getTname());
@@ -99,10 +98,10 @@ public class VendorUser extends User {
 					System.out.println("*Description: " + t.getTdesc());
 					System.out.println("*Status: " + t.getTstatus());
 					System.out.println("=================================");
-					
+
 					count++;
 				}
-				
+
 			}
 		}
 
@@ -111,30 +110,33 @@ public class VendorUser extends User {
 	public void bidTender() {
 
 		Scanner sc = new Scanner(System.in);
-		
-		System.out.println("Enter the Tender Id:");
-		int tid = Integer.parseInt(sc.nextLine());
-		
-		Tender t = new TenderDaoImpl().getTenderDataById(tid);
-		
-		if(t == null || t.getTstatus().equalsIgnoreCase("Assigned")) {
 
-			System.out.println("============================================");
-			System.out.println("Tender: " + tid + " not Found");
-			System.out.println("============================================");
+		try {
+			System.out.println("Enter Tender Id");
+			int tid = Integer.parseInt(sc.nextLine());
+
+			Tender t = new TenderDaoImpl().getTenderDataById(tid);
+
+			if (t == null || t.getTstatus().equalsIgnoreCase("Assigned")) {
+
+				System.out.println("============================================");
+				System.out.println("Tender: " + tid + " not Found");
+				System.out.println("============================================");
+			} else {
+				System.out.println("Enter Bid Amount");
+				int bidAmount = Integer.parseInt(sc.nextLine());
+
+				BidderDao bdao = new BidderDaoImpl();
+
+				String status = bdao.bidTender(new Bidder(0, this.getUsername(), tid, bidAmount, "Pending"));
+
+				System.out.println("============================================");
+				System.out.println(status);
+				System.out.println("============================================");
+			}
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid Input");
 		}
-		
-		System.out.println("Enter Bid Amount");
-		int bidAmount = Integer.parseInt(sc.nextLine());
-
-		BidderDao bdao = new BidderDaoImpl();
-		
-		String status = bdao.bidTender(new Bidder(0,this.getUsername(),tid,bidAmount,"Pending"));
-		
-
-		System.out.println("============================================");
-		System.out.println(status);
-		System.out.println("============================================");
 
 	}
 
@@ -172,16 +174,19 @@ public class VendorUser extends User {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Enter the Tender Id to get Its Bid Status");
-		int tid = Integer.parseInt(sc.nextLine());
+		try {
+			System.out.println("Enter the Tender Id to get Its Bid Status");
+			int tid = Integer.parseInt(sc.nextLine());
+			BidderDao bdao = new BidderDaoImpl();
 
-		BidderDao bdao = new BidderDaoImpl();
+			String status = bdao.getStatusOfABid(tid, this.getUsername());
 
-		String status = bdao.getStatusOfABid(tid,this.getUsername());
-		
-		System.out.println("============================================");
-		System.out.println("Status for Bid on Tender id : " + tid + " is " + status);
-		System.out.println("============================================");
+			System.out.println("============================================");
+			System.out.println("Status for Bid on Tender id : " + tid + " is " + status);
+			System.out.println("============================================");
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid Input");
+		}
 
 	}
 

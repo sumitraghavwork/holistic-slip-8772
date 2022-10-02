@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -71,17 +72,22 @@ public class Admin extends User {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Enter Vendor userId/username");
-		String username = sc.nextLine();
+		try {
+			System.out.println("Enter Vendor userId/username");
+			String username = sc.nextLine();
 
-		System.out.println("Enter Vendor Password");
-		String password = sc.nextLine();
+			System.out.println("Enter Vendor Password");
+			String password = sc.nextLine();
 
-		String status = new VendorDaoImpl().registerVendor(new Vendor(username, password));
+			String status = new VendorDaoImpl().registerVendor(new Vendor(username, password));
 
-		System.out.println("============================================");
-		System.out.println(status);
-		System.out.println("============================================");
+			System.out.println("============================================");
+			System.out.println(status);
+			System.out.println("============================================");
+
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid Input");
+		}
 
 	}
 
@@ -93,7 +99,7 @@ public class Admin extends User {
 			System.out.println("=========================");
 			System.out.println("No Vendors Found");
 			System.out.println("=========================");
-		}else {
+		} else {
 
 			System.out.println("=================================");
 			int count = 1;
@@ -122,7 +128,7 @@ public class Admin extends User {
 			System.out.println("============================================");
 			System.out.println("No Tenders Found");
 			System.out.println("============================================");
-		}else {
+		} else {
 
 			System.out.println("============================================");
 			int count = 1;
@@ -142,45 +148,52 @@ public class Admin extends User {
 		}
 
 	}
-	
+
 	public void createNewTender() {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Enter The Tender Details");
+		try {
+			System.out.println("Enter The Tender Details");
 
-		Tender tender = new Tender();
+			Tender tender = new Tender();
 
-		System.out.println("Enter Tender Title:");
-		tender.setTname(sc.nextLine());
-		
-		System.out.println("Enter Tender Type: {new/old/additonal}");
-		tender.setTtype(sc.nextLine());
-		
-		System.out.println("Enter Tender Price:");
-		tender.setTprice(Integer.parseInt(sc.nextLine()));
+			System.out.println("Enter Tender Title:");
+			tender.setTname(sc.nextLine());
 
-		System.out.println("Enter Tender Description:");
-		tender.setTdesc(sc.nextLine());
+			System.out.println("Enter Tender Type: {new/old/additonal}");
+			tender.setTtype(sc.nextLine());
 
-		tender.setTstatus("Not Assigned");
+			System.out.println("Enter Tender Price:");
+			tender.setTprice(Integer.parseInt(sc.nextLine()));
 
-		String status = new TenderDaoImpl().createTender(tender);
+			System.out.println("Enter Tender Description:");
+			tender.setTdesc(sc.nextLine());
 
-		System.out.println("============================================");
-		System.out.println(status);
-		System.out.println("============================================");
+			tender.setTstatus("Not Assigned");
+
+			String status = new TenderDaoImpl().createTender(tender);
+
+			System.out.println("============================================");
+			System.out.println(status);
+			System.out.println("============================================");
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid Input");
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid Input");
+		}
+
 	}
-	
-	public void getAllAssignedTenders(){
-		
+
+	public void getAllAssignedTenders() {
+
 		List<Tender> tenders = new TenderDaoImpl().getAllAssignedTenders();
 
 		if (tenders.isEmpty()) {
 			System.out.println("============================================");
 			System.out.println("No Tenders Found which are Assigned");
 			System.out.println("============================================");
-		}else {
+		} else {
 
 			System.out.println("============================================");
 			int count = 1;
@@ -204,29 +217,33 @@ public class Admin extends User {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Enter Tender Id");
-		int tid = Integer.parseInt(sc.nextLine());
+		try {
+			System.out.println("Enter Tender Id");
+			int tid = Integer.parseInt(sc.nextLine());
 
-		List<Bidder> bids = new BidderDaoImpl().getAllBidsOfaTender(tid);
+			List<Bidder> bids = new BidderDaoImpl().getAllBidsOfaTender(tid);
 
-		if (bids.isEmpty()) {
-			System.out.println("============================================");
-			System.out.println("No Bids Found");
-			System.out.println("============================================");
-		}else {
-			int count = 1;
-			for (int i = 0; i < bids.size(); i++) {
-				Bidder b = bids.get(i);
-				System.out.println(count + " Bids Details:");
-				System.out.println("*Bid ID: " + b.getBid());
-				System.out.println("*Tender ID: " + b.getTid());
-				System.out.println("*Vendor ID: " + b.getVid());
-				System.out.println("*Bid Amount: " + b.getBidAmount());
-				System.out.println("*Bid Status: " + b.getStatus());
-				System.out.println("=================================");
+			if (bids.isEmpty()) {
+				System.out.println("============================================");
+				System.out.println("No Bids Found");
+				System.out.println("============================================");
+			} else {
+				int count = 1;
+				for (int i = 0; i < bids.size(); i++) {
+					Bidder b = bids.get(i);
+					System.out.println(count + " Bids Details:");
+					System.out.println("*Bid ID: " + b.getBid());
+					System.out.println("*Tender ID: " + b.getTid());
+					System.out.println("*Vendor ID: " + b.getVid());
+					System.out.println("*Bid Amount: " + b.getBidAmount());
+					System.out.println("*Bid Status: " + b.getStatus());
+					System.out.println("=================================");
 
-				count++;
+					count++;
+				}
 			}
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid Input");
 		}
 
 	}
@@ -235,25 +252,30 @@ public class Admin extends User {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Enter Tender Id");
-		int tid = Integer.parseInt(sc.nextLine());
+		try {
+			System.out.println("Enter Tender Id");
+			int tid = Integer.parseInt(sc.nextLine());
 
-		BidderDao bdao = new BidderDaoImpl();
-		
-		if (bdao.getAllBidsOfaTender(tid).isEmpty()) {
-			System.out.println("============================================");
-			System.out.println("No Bids Filed for tender Id: " + tid);
-			System.out.println("============================================");
-		} else {
-			String status = bdao.acceptBid(tid);
-			bdao.rejectBid(tid);
+			BidderDao bdao = new BidderDaoImpl();
 
-			System.out.println("===============================");
-			System.out.println(status);
-			System.out.println("===============================");
+			if (bdao.getAllBidsOfaTender(tid).isEmpty()) {
+				System.out.println("============================================");
+				System.out.println("No Bids Filed for tender Id: " + tid);
+				System.out.println("============================================");
+			} else {
+				String status = bdao.acceptBid(tid);
+				bdao.rejectBid(tid);
+
+				System.out.println("===============================");
+				System.out.println(status);
+				System.out.println("===============================");
+			}
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid Input");
 		}
+
 	}
-	
+
 //	public void removeTender() {
 //		
 //		Scanner sc = new Scanner(System.in);
@@ -275,22 +297,27 @@ public class Admin extends User {
 //		}
 //		
 //	}
-	
+
 	public void updateTender() {
-		
+
 		Scanner sc = new Scanner(System.in);
 
-		Tender tender = new Tender();		
+		Tender tender = new Tender();
 
-		System.out.println("Enter Tender ID:");
-		int tid = Integer.parseInt(sc.nextLine());
-		
+		int tid = -1;
+		try {
+			System.out.println("Enter Tender Id");
+			tid = Integer.parseInt(sc.nextLine());
+		} catch (NumberFormatException e) {
+			// TODO: handle exception
+		}
+
 		Tender t = new TenderDaoImpl().getTenderDataById(tid);
-		
-		if(t!=null) {
-			
+
+		if (t != null) {
+
 			tender.setTid(tid);
-			
+
 			System.out.println("Existing Tender Details:");
 			System.out.println("*ID: " + t.getTid());
 			System.out.println("*Title: " + t.getTname());
@@ -299,48 +326,57 @@ public class Admin extends User {
 			System.out.println("*Description: " + t.getTdesc());
 			System.out.println("*Status: " + t.getTstatus());
 			System.out.println("=================================");
-		}else {
+		} else {
 			System.out.println("============================================");
 			System.out.println("No Tenders Found for Tender ID: " + tid);
 			System.out.println("============================================");
 			return;
 		}
-		
-		System.out.println("Enter The Tender Updated Details");
-		
-		System.out.println("Enter Tender Title:");
-		tender.setTname(sc.nextLine());
-		
-		System.out.println("Enter Tender Type: {new/old/additonal}");
-		tender.setTtype(sc.nextLine());
-		
-		System.out.println("Enter Tender Price:");
-		tender.setTprice(Integer.parseInt(sc.nextLine()));
 
-		System.out.println("Enter Tender Description:");
-		tender.setTdesc(sc.nextLine());
-		
-		System.out.println("Enter Tender Status:");
-		tender.setTstatus(sc.nextLine());
-		
-		String status = new TenderDaoImpl().updateTender(tender);
+		try {
+			System.out.println("Enter The Tender Updated Details");
 
-		System.out.println("===============================");
-		System.out.println(status);
-		System.out.println("===============================");
-		
+			System.out.println("Enter Tender Title:");
+			tender.setTname(sc.nextLine());
+
+			System.out.println("Enter Tender Type: {new/old/additonal}");
+			tender.setTtype(sc.nextLine());
+
+			System.out.println("Enter Tender Price:");
+			tender.setTprice(Integer.parseInt(sc.nextLine()));
+
+			System.out.println("Enter Tender Description:");
+			tender.setTdesc(sc.nextLine());
+
+			System.out.println("Enter Tender Status:");
+			tender.setTstatus(sc.nextLine());
+
+			String status = new TenderDaoImpl().updateTender(tender);
+
+			System.out.println("===============================");
+			System.out.println(status);
+			System.out.println("===============================");
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid Input");
+		}
+
 	}
-	
+
 	public void getTenderDataById() {
-		
+
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Enter Tender ID:");
-		int tid = Integer.parseInt(sc.nextLine());
-		
+		int tid = -1;
+		try {
+			System.out.println("Enter Tender Id");
+			tid = Integer.parseInt(sc.nextLine());
+		} catch (NumberFormatException e) {
+			// TODO: handle exception
+		}
+
 		Tender t = new TenderDaoImpl().getTenderDataById(tid);
-		
-		if(t!=null) {
+
+		if (t != null) {
 			System.out.println(" Tender Details:");
 			System.out.println("*ID: " + t.getTid());
 			System.out.println("*Title: " + t.getTname());
@@ -349,11 +385,11 @@ public class Admin extends User {
 			System.out.println("*Description: " + t.getTdesc());
 			System.out.println("*Status: " + t.getTstatus());
 			System.out.println("=================================");
-		}else {
+		} else {
 			System.out.println("============================================");
 			System.out.println("No Tenders Found for Tender ID: " + tid);
 			System.out.println("============================================");
 		}
-		
+
 	}
 }
