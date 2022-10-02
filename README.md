@@ -54,5 +54,4 @@
 <p align="center"> <img src="./WebContent/vendorLogin.png" alt="sumitraghavwork" style="border-radius:20px"/> </p>
 
 ## Appendix
-
 Any additional information goes here
