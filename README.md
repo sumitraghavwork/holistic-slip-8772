@@ -50,7 +50,7 @@
 
 <h1 align="center">App Screenshot</h1>
 
-<p align="center"> <img src="./WebContent/flow.png" alt="sumitraghavwork" style="border-radius:20px"/> </p>
+<p align="center"> <img src="./WebContent/FLOW.png" alt="sumitraghavwork" style="border-radius:20px"/> </p>
 <p align="center" > <img src="./WebContent/adminLogin.png" alt="sumitraghavwork" style="border-radius:20px"/> </p>
 <p align="center"> <img src="./WebContent/vendorLogin.png" alt="sumitraghavwork" style="border-radius:20px"/> </p>
 
