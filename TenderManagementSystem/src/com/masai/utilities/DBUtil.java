@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBUtil {
 
@@ -15,7 +16,7 @@ public class DBUtil {
 	}
 
 	public static Connection provideConnection() {
-
+		
 		try {
 
 			if (conn == null || conn.isClosed() == true) {
@@ -34,7 +35,7 @@ public class DBUtil {
 			}
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 

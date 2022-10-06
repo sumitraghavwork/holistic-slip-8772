@@ -19,5 +19,7 @@ public interface BidderDao {
 	public String getStatusOfABid(int tid,String vendorId);
 	
 	public Bidder bestBids(int tendorId); 
+	
+	
 
 }
